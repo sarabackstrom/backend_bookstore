@@ -10,6 +10,9 @@ import k25.bookstore.model.BookRepository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Controller
@@ -44,6 +47,13 @@ public String bookList(Model model) {
     public String deleteBook(@PathVariable("id") Long bookId, Model model) {
     	repository.deleteById(bookId);
         return "redirect:../booklist";
-    }     
+    }
+    
+    @GetMapping(value = "/edit/{id}")
+    public String showModBook(@PathVariable("id") Long bookId, Model model) {
+        model.addAttribute("book", repository.findById(bookId).orElse(null));
+        return "editBook";
+    }
+    
 
 }
