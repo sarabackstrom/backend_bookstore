@@ -1,5 +1,6 @@
 package k25.bookstore;
 
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 
 import k25.bookstore.model.Book;
 import k25.bookstore.model.BookRepository;
+import k25.bookstore.model.Category;
+import k25.bookstore.model.CategoryRepository;
 
 @SpringBootApplication
 public class BookstoreApplication {
@@ -15,11 +18,22 @@ public class BookstoreApplication {
 		SpringApplication.run(BookstoreApplication.class, args);
 	}
 
-	//public Book(String title, String author, String isbn, int publicationYear, double price)
+	// public Book(String title, String author, String isbn, int publicationYear,
+	// double price)
 	@Bean
-	public CommandLineRunner bookDemo(BookRepository repository){
-		return(args) -> {
-			repository.save(new Book("Töttöröö", "Sara Bäckström", "123-abc", 2012, 32.00));
+	public CommandLineRunner bookDemo(BookRepository bRepository, CategoryRepository cRepository) {
+		return (args) -> {
+			Category category1 = new Category("Jännitys");
+			Category category2 = new Category("Lapset");
+			Category category3 = new Category("Tiede");
+
+			cRepository.save(category1);
+			cRepository.save(category2);
+			cRepository.save(category3);
+
+			bRepository.save(new Book("Antakoon ikuisuus anteeksi", "Anna Jansson", "9789512430390", 2025, 28.00, category1));
+			bRepository.save(new Book("MAOL-taulukot", "Teemu Hiltula", "9789511344384", 2019, 50.00, category3));
+			bRepository.save(new Book("Tassulan lasten lääkärikirja", "Mauri Kunnas", "9789511463009", 2023, 28.60, category2));
 		};
 	}
 

@@ -3,55 +3,66 @@ package k25.bookstore.web;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 import k25.bookstore.model.Book;
 import k25.bookstore.model.BookRepository;
+import k25.bookstore.model.CategoryRepository;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 @Controller
 
 public class BookController {
     @Autowired
-    private BookRepository repository;
+    private BookRepository bRepository;
 
-    public BookController(BookRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired 
+    private CategoryRepository cRepository;
+
 
 @RequestMapping(value= {"/", "/booklist"})
 public String bookList(Model model) {
-    model.addAttribute("books", repository.findAll());
+    model.addAttribute("books", bRepository.findAll());
     return "booklist";
 }
 
  @RequestMapping(value = "/add")
     public String addBook(Model model){
     	model.addAttribute("book", new Book());
+        model.addAttribute("categories", cRepository.findAll());
         return "addBook";
     }     
     
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public String save(Book book){
-        repository.save(book);
+    public String save(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model){
+        if(bindingResult.hasErrors()){
+            model.addAttribute("book", book);
+            model.addAttribute("categories", cRepository.findAll());
+            return "addBook";
+        }
+        bRepository.save(book);
         return "redirect:booklist";
     }    
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String deleteBook(@PathVariable("id") Long bookId, Model model) {
-    	repository.deleteById(bookId);
+    	bRepository.deleteById(bookId);
         return "redirect:../booklist";
     }
     
     @GetMapping(value = "/edit/{id}")
     public String showModBook(@PathVariable("id") Long bookId, Model model) {
-        model.addAttribute("book", repository.findById(bookId).orElse(null));
+        model.addAttribute("book", bRepository.findById(bookId).orElse(null));
+        model.addAttribute("categories", cRepository.findAll());
         return "editBook";
     }
     
