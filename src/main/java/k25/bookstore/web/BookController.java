@@ -35,12 +35,12 @@ public String bookList(Model model) {
     return "booklist";
 }
 
- @RequestMapping(value = "/add")
+@RequestMapping(value = "/add")
     public String addBook(Model model){
     	model.addAttribute("book", new Book());
         model.addAttribute("categories", cRepository.findAll());
         return "addBook";
-    }     
+    }  
     
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String save(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model){
@@ -51,7 +51,7 @@ public String bookList(Model model) {
         }
         bRepository.save(book);
         return "redirect:booklist";
-    }    
+    } 
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String deleteBook(@PathVariable("id") Long bookId, Model model) {
@@ -59,11 +59,21 @@ public String bookList(Model model) {
         return "redirect:../booklist";
     }
     
-    @GetMapping(value = "/edit/{id}")
+  @GetMapping(value = "/edit/{id}")
     public String showModBook(@PathVariable("id") Long bookId, Model model) {
         model.addAttribute("book", bRepository.findById(bookId).orElse(null));
         model.addAttribute("categories", cRepository.findAll());
         return "editBook";
+    }
+
+    @RequestMapping(value = "/saveEdit", method = RequestMethod.POST)
+    public String saveEdit(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", cRepository.findAll());
+            return "editBook";
+        }
+        bRepository.save(book);
+        return "redirect:/booklist";
     }
     
 
