@@ -1,5 +1,7 @@
 package k25.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class Book {
     private double price;
 
     @ManyToOne
+    @JsonIgnore //estää loopin json-tiedostossa
     @JoinColumn(name = "categoryid")
     private Category category;
 
