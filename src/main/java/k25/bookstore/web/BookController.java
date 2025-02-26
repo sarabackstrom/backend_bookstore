@@ -1,6 +1,7 @@
 package k25.bookstore.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,8 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @Controller
@@ -53,19 +56,23 @@ public String bookList(Model model) {
         return "redirect:booklist";
     } 
 
+    
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String deleteBook(@PathVariable("id") Long bookId, Model model) {
     	bRepository.deleteById(bookId);
         return "redirect:../booklist";
     }
     
-  @GetMapping(value = "/edit/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping(value = "/edit/{id}")
     public String showModBook(@PathVariable("id") Long bookId, Model model) {
         model.addAttribute("book", bRepository.findById(bookId).orElse(null));
         model.addAttribute("categories", cRepository.findAll());
         return "editBook";
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @RequestMapping(value = "/saveEdit", method = RequestMethod.POST)
     public String saveEdit(@Valid @ModelAttribute("book") Book book, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
@@ -75,6 +82,7 @@ public String bookList(Model model) {
         bRepository.save(book);
         return "redirect:/booklist";
     }
+    
     
 
 }
